@@ -1,17 +1,24 @@
-import API from "./axios-client";
-import { CurrentUserResponseType } from "@/types/api.type";
+import { AxiosResponse } from 'axios';
+import API from './axios-client';
+import {
+   AllWorkspaceResponseType,
+   CurrentUserResponseType,
+   LoginResponseType,
+   loginType,
+} from '@/types/api.type';
 
-export const loginMutationFn = async () => {};
+type PromiseAxios<T> = Promise<AxiosResponse<T>>;
+
+export const loginMutationFn = async (
+   payoad: loginType
+): PromiseAxios<LoginResponseType> => API.post(`/auth/sign-in`, payoad);
 
 export const registerMutationFn = async () => {};
 
 export const logoutMutationFn = async () => {};
 
 export const getCurrentUserQueryFn =
-  async (): Promise<CurrentUserResponseType> => {
-    const response = await API.get(`/user/current`);
-    return response.data;
-  };
+   (): PromiseAxios<CurrentUserResponseType> => API.get(`/user/current`);
 
 //********* WORKSPACE ****************
 //************* */
@@ -22,7 +29,9 @@ export const editWorkspaceMutationFn = async () => {};
 
 export const getWorkspaceByIdQueryFn = async () => {};
 
-export const getAllWorkspacesUserIsMemberQueryFn = () => {};
+export const getAllWorkspacesUserIsMemberQueryFn =
+   (): PromiseAxios<AllWorkspaceResponseType> =>
+      API.get(`/workspace/user/current`);
 
 export const getWorkspaceAnalyticsQueryFn = async () => {};
 
