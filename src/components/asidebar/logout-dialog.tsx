@@ -13,19 +13,21 @@ import { logoutMutationFn } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKeys } from '@/constant';
+import { useNavigate } from 'react-router-dom';
 
 const LogoutDialog = (props: {
    isOpen: boolean;
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
    const { isOpen, setIsOpen } = props;
+   const navigate = useNavigate();
 
    const queryClient = useQueryClient();
 
    const { mutate, isPending } = useApiMutation({
       mutationFn: logoutMutationFn,
-      onSuccessHandler: (data) => {
-         console.log(data);
+      onSuccessHandler: () => {
+         navigate('/');
          queryClient.resetQueries({ queryKey: [QueryKeys.AUTH_USER] });
       },
       onError: (err) => {

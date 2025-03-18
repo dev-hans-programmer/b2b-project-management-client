@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect } from 'react';
 import useWorkspaceId from '@/hooks/use-workspace-id';
 import useAuth from '@/hooks/api/use-auth';
-import { UserType } from '@/types/api.type';
+import { UserType, WorkspaceType } from '@/types/api.type';
+import useGetWorkspaceQuery from '@/hooks/api/use-get-workspace';
+import { useNavigate } from 'react-router-dom';
 
 // Define the context shape
 type AuthContextType = {
@@ -11,6 +13,8 @@ type AuthContextType = {
    isFetching: boolean;
    error: string | null;
    refetchAuth: () => void;
+   refetchWorkspace: () => void;
+   workspace?: WorkspaceType;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,7 +22,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
    children,
 }) => {
-   //const navigate = useNavigate();
+   const navigate = useNavigate();
+   const workspaceId = useWorkspaceId();
    const {
       data,
       errorMessage,
@@ -26,20 +31,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       isFetching,
       refetch: refetchAuth,
    } = useAuth();
-   const workspaceId = useWorkspaceId();
 
-   useEffect(() => {});
+   const {
+      data: workspaceData,
+      isLoading: isWorkspaceLoading,
+      errorMessage: workspaceErrorMessage,
+      refetch: refetchWorkspace,
+      fullErrorObject,
+   } = useGetWorkspaceQuery(workspaceId);
+
+   useEffect(() => {
+      if (fullErrorObject?.errorCode === 'ACCESS_UNAUTHORIZED') {
+         navigate('/');
+      }
+   }, [fullErrorObject?.errorCode, navigate]);
 
    return (
       <AuthContext.Provider
          value={{
             workspaceId,
             user: data?.user,
-            error: errorMessage,
+            error: errorMessage || workspaceErrorMessage,
+            workspace: workspaceData?.workspace,
 
-            isLoading,
+            isLoading: isLoading || isWorkspaceLoading,
             isFetching,
             refetchAuth,
+            refetchWorkspace,
          }}
       >
          {children}

@@ -6,13 +6,15 @@ import {
 } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
+interface ErrorDataObject {
+   message: string;
+   errorCode: string;
+   statusCode: number;
+}
+
 export interface CustomErrorResponse {
    status: string;
-   data: {
-      message: string;
-      errorCode: string;
-      statusCode: number;
-   };
+   data: ErrorDataObject;
 }
 type ApiQueryFunction<TData> = () => Promise<AxiosResponse<TData>>;
 type ApiMutationFunction<TData, TPayload> = (
@@ -49,6 +51,7 @@ const useApiQuery = <TData>({
    };
 
    let errorMessage: string | null = null;
+   let fullErrorObject: ErrorDataObject | null = null;
 
    const { data, error, isLoading, isFetching, isError, isSuccess, refetch } =
       useQuery<TData, CustomErrorResponse>({
@@ -70,6 +73,7 @@ const useApiQuery = <TData>({
 
    if (isError) {
       errorMessage = error?.data.message || null;
+      fullErrorObject = error?.data;
    }
 
    return {
@@ -77,6 +81,7 @@ const useApiQuery = <TData>({
       isLoading,
       isFetching,
       errorMessage,
+      fullErrorObject,
       isSuccess,
       refetch,
    };

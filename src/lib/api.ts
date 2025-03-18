@@ -5,6 +5,7 @@ import {
    CurrentUserResponseType,
    LoginResponseType,
    loginType,
+   WorkspaceByIdResponseType,
 } from '@/types/api.type';
 
 type PromiseAxios<T> = Promise<AxiosResponse<T>>;
@@ -28,7 +29,9 @@ export const createWorkspaceMutationFn = async () => {};
 
 export const editWorkspaceMutationFn = async () => {};
 
-export const getWorkspaceByIdQueryFn = async () => {};
+export const getWorkspaceByIdQueryFn = (
+   id: string
+): PromiseAxios<WorkspaceByIdResponseType> => API.get(`/workspace/${id}`);
 
 export const getAllWorkspacesUserIsMemberQueryFn =
    (): PromiseAxios<AllWorkspaceResponseType> =>
