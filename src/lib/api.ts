@@ -2,6 +2,8 @@ import { AxiosResponse } from 'axios';
 import API from './axios-client';
 import {
    AllWorkspaceResponseType,
+   CreateWorkspaceResponseType,
+   CreateWorkspaceType,
    CurrentUserResponseType,
    LoginResponseType,
    loginType,
@@ -25,7 +27,9 @@ export const getCurrentUserQueryFn =
 //********* WORKSPACE ****************
 //************* */
 
-export const createWorkspaceMutationFn = async () => {};
+export const createWorkspaceMutationFn = (
+   payload: CreateWorkspaceType
+): PromiseAxios<CreateWorkspaceResponseType> => API.post(`/workspace`, payload);
 
 export const editWorkspaceMutationFn = async () => {};
 

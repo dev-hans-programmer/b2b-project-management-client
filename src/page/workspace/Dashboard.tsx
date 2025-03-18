@@ -7,15 +7,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import RecentProjects from '@/components/workspace/project/recent-projects';
 import RecentTasks from '@/components/workspace/task/recent-tasks';
 import RecentMembers from '@/components/workspace/member/recent-members';
+import { useAuthContext } from '@/context/auth-provider';
+import { DashboardSkeleton } from '@/components/skeleton-loaders/dashboard-skeleton';
 const WorkspaceDashboard = () => {
    const { onOpen } = useCreateProjectDialog();
+
+   const { workspace, isLoading } = useAuthContext();
+
+   if (isLoading) return <DashboardSkeleton />;
+
+   if (!workspace) return <h2>Workspace does not exist</h2>;
 
    return (
       <main className='flex flex-1 flex-col py-4 md:pt-3'>
          <div className='flex items-center justify-between space-y-2 mb-6'>
             <div>
                <h2 className='text-2xl font-bold tracking-tight'>
-                  Workspace Overview
+                  Workspace Overview {workspace.name}
                </h2>
                <p className='text-muted-foreground'>
                   Here&apos;s an overview for this workspace!

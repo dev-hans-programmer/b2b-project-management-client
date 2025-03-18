@@ -1,6 +1,7 @@
 export const QueryKeys = {
    AUTH_USER: 'authUser',
    WORKSPACE: 'workspace',
+   WORKSPACES: 'workspaces',
 };
 
 export const TaskStatusEnum = {

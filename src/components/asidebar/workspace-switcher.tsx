@@ -23,6 +23,7 @@ import useCreateWorkspaceDialog from '@/hooks/use-create-workspace-dialog';
 import { useApiQuery } from '@/hooks/react-query-hooks';
 import { getAllWorkspacesUserIsMemberQueryFn } from '@/lib/api';
 import { WorkspaceType } from '@/types/api.type';
+import { QueryKeys } from '@/constant';
 
 export function WorkspaceSwitcher() {
    const navigate = useNavigate();
@@ -33,7 +34,7 @@ export function WorkspaceSwitcher() {
 
    const { isLoading, data } = useApiQuery({
       queryFn: getAllWorkspacesUserIsMemberQueryFn,
-      queryKey: ['workspaces'],
+      queryKey: [QueryKeys.WORKSPACES],
       staleTime: 1,
       refetchOnMount: true,
    });
@@ -59,6 +60,8 @@ export function WorkspaceSwitcher() {
       setActiveWorkspace(workspace);
       navigate(`/workspace/${workspace._id}`);
    };
+
+   console.log('workspaces', activeWorkspace);
 
    return (
       <>

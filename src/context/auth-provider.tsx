@@ -43,6 +43,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
    useEffect(() => {
       if (fullErrorObject?.errorCode === 'ACCESS_UNAUTHORIZED') {
          navigate('/');
+      } else if (fullErrorObject?.errorCode === 'RESOURCE_NOT_FOUND') {
+         navigate('/404');
       }
    }, [fullErrorObject?.errorCode, navigate]);
 
