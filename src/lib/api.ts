@@ -15,7 +15,8 @@ export const loginMutationFn = async (
 
 export const registerMutationFn = async () => {};
 
-export const logoutMutationFn = async () => {};
+export const logoutMutationFn = (): PromiseAxios<{ message: string }> =>
+   API.post(`/auth/sign-out`);
 
 export const getCurrentUserQueryFn =
    (): PromiseAxios<CurrentUserResponseType> => API.get(`/user/current`);

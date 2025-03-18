@@ -4,12 +4,12 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { isAuthRoute } from './common/routePaths';
 
 const AuthRoute = () => {
-   const { isLoading, data } = useAuth();
+   const { isLoading, data, errorMessage } = useAuth();
    const user = data?.user || null;
 
    const _isAuthRoute = isAuthRoute(location.pathname);
 
-   if (isLoading && !_isAuthRoute) {
+   if ((isLoading && !_isAuthRoute) || (!user && !errorMessage)) {
       return <DashboardSkeleton />;
    }
 
