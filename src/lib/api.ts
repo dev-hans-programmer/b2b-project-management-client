@@ -26,31 +26,35 @@ export const logoutMutationFn = (): PromiseAxios<{ message: string }> =>
    API.post(`/auth/sign-out`);
 
 export const getCurrentUserQueryFn =
-   (): PromiseAxios<CurrentUserResponseType> => API.get(`/user/current`);
+   (): PromiseAxios<CurrentUserResponseType> => API.get(`/users/current`);
 
 //********* WORKSPACE ****************
 //************* */
 
 export const createWorkspaceMutationFn = (
    payload: CreateWorkspaceType
-): PromiseAxios<CreateWorkspaceResponseType> => API.post(`/workspace`, payload);
+): PromiseAxios<CreateWorkspaceResponseType> =>
+   API.post(`/workspaces`, payload);
 
 export const editWorkspaceMutationFn = (payload: EditWorkspaceType) =>
-   API.put(`/workspace/${payload.workspaceId}`, payload.data);
+   API.put(`/workspaces/${payload.workspaceId}`, payload.data);
 
 export const getWorkspaceByIdQueryFn = (
    id: string
-): PromiseAxios<WorkspaceByIdResponseType> => API.get(`/workspace/${id}`);
+): PromiseAxios<WorkspaceByIdResponseType> => API.get(`/workspaces/${id}`);
 
 export const getAllWorkspacesUserIsMemberQueryFn =
    (): PromiseAxios<AllWorkspaceResponseType> =>
-      API.get(`/workspace/user/current`);
+      API.get(`/workspaces/user/current`);
 
 export const getWorkspaceAnalyticsQueryFn = async () => {};
 
 export const changeWorkspaceMemberRoleMutationFn = async () => {};
 
-export const deleteWorkspaceMutationFn = async () => {};
+export const deleteWorkspaceMutationFn = async (
+   id: string
+): PromiseAxios<{ currentWorkspace: string }> =>
+   API.delete(`/workspaces/${id}`);
 
 //*******MEMBER ****************
 
