@@ -61,8 +61,6 @@ export function WorkspaceSwitcher() {
       navigate(`/workspace/${workspace._id}`);
    };
 
-   console.log('workspaces', activeWorkspace);
-
    return (
       <>
          <SidebarGroupLabel className='w-full justify-between pr-0'>

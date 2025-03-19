@@ -5,8 +5,10 @@ import {
    CreateWorkspaceResponseType,
    CreateWorkspaceType,
    CurrentUserResponseType,
+   EditWorkspaceType,
    LoginResponseType,
    loginType,
+   registerType,
    WorkspaceByIdResponseType,
 } from '@/types/api.type';
 
@@ -16,7 +18,9 @@ export const loginMutationFn = async (
    payoad: loginType
 ): PromiseAxios<LoginResponseType> => API.post(`/auth/sign-in`, payoad);
 
-export const registerMutationFn = async () => {};
+export const registerMutationFn = (
+   payload: registerType
+): PromiseAxios<{ message: string }> => API.post(`/auth`, payload);
 
 export const logoutMutationFn = (): PromiseAxios<{ message: string }> =>
    API.post(`/auth/sign-out`);
@@ -31,7 +35,8 @@ export const createWorkspaceMutationFn = (
    payload: CreateWorkspaceType
 ): PromiseAxios<CreateWorkspaceResponseType> => API.post(`/workspace`, payload);
 
-export const editWorkspaceMutationFn = async () => {};
+export const editWorkspaceMutationFn = (payload: EditWorkspaceType) =>
+   API.put(`/workspace/${payload.workspaceId}`, payload.data);
 
 export const getWorkspaceByIdQueryFn = (
    id: string
