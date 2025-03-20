@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import API from './axios-client';
 import {
    AllWorkspaceResponseType,
+   AnalyticsResponseType,
    CreateWorkspaceResponseType,
    CreateWorkspaceType,
    CurrentUserResponseType,
@@ -40,14 +41,18 @@ export const editWorkspaceMutationFn = (payload: EditWorkspaceType) =>
    API.put(`/workspaces/${payload.workspaceId}`, payload.data);
 
 export const getWorkspaceByIdQueryFn = (
-   id: string
-): PromiseAxios<WorkspaceByIdResponseType> => API.get(`/workspaces/${id}`);
+   workspaceId: string
+): PromiseAxios<WorkspaceByIdResponseType> =>
+   API.get(`/workspaces/${workspaceId}`);
 
 export const getAllWorkspacesUserIsMemberQueryFn =
    (): PromiseAxios<AllWorkspaceResponseType> =>
       API.get(`/workspaces/user/current`);
 
-export const getWorkspaceAnalyticsQueryFn = async () => {};
+export const getWorkspaceAnalyticsQueryFn = async (
+   workspaceId: string
+): PromiseAxios<AnalyticsResponseType> =>
+   API.get(`/workspaces/${workspaceId}/analytics`);
 
 export const changeWorkspaceMemberRoleMutationFn = async () => {};
 

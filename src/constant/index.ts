@@ -2,6 +2,7 @@ export const QueryKeys = {
    AUTH_USER: 'authUser',
    WORKSPACE: 'workspace',
    WORKSPACES: 'workspaces',
+   WORKSPACE_ANALYTICS: 'workspaceAnalytics',
 };
 
 export const TaskStatusEnum = {
