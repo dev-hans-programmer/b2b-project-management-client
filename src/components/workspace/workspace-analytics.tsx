@@ -2,13 +2,7 @@ import { useApiQuery } from '@/hooks/react-query-hooks';
 import AnalyticsCard from './common/analytics-card';
 import { getWorkspaceAnalyticsQueryFn } from '@/lib/api';
 import useWorkspaceId from '@/hooks/use-workspace-id';
-import { QueryKeys } from '@/constant';
-
-const taskMapping = {
-   totalTasks: 'Total Tasks',
-   completedTasks: 'Completed Tasks',
-   overdueTasks: 'Overdue Tasks',
-};
+import { QueryKeys, TaskMapping } from '@/constant';
 
 const WorkspaceAnalytics = () => {
    const workspaceId = useWorkspaceId();
@@ -24,7 +18,7 @@ const WorkspaceAnalytics = () => {
       ? (Object.keys(analytics) as Array<keyof typeof analytics>).map(
            (key) => ({
               id: key,
-              title: taskMapping[key],
+              title: TaskMapping[key],
               value: analytics[key],
            })
         )

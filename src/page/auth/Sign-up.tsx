@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -28,6 +28,9 @@ import { Loader } from 'lucide-react';
 
 const SignUp = () => {
    const navigate = useNavigate();
+   const [searchParams] = useSearchParams();
+
+   const returnUrl = searchParams.get('returnUrl');
    const formSchema = z.object({
       name: z.string().trim().min(1, {
          message: 'Name is required',
@@ -58,7 +61,9 @@ const SignUp = () => {
             variant: 'success',
          });
 
-         navigate('/');
+         const decodedUrl = decodeURIComponent(returnUrl || '');
+
+         navigate(`/?returnUrl=${decodedUrl}`);
       },
       onError: (err) => {
          toast({

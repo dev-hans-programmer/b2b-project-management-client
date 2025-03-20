@@ -39,3 +39,11 @@ export const Permissions = {
 } as const;
 
 export type PermissionType = keyof typeof Permissions;
+
+export const TaskMapping = {
+   totalTasks: 'Total Tasks',
+   completedTasks: 'Completed Tasks',
+   overdueTasks: 'Overdue Tasks',
+};
+
+export type TaskMapping = typeof TaskMapping;

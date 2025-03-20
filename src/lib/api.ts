@@ -63,7 +63,10 @@ export const deleteWorkspaceMutationFn = async (
 
 //*******MEMBER ****************
 
-export const invitedUserJoinWorkspaceMutationFn = async () => {};
+export const invitedUserJoinWorkspaceMutationFn = (
+   inviteCode: string
+): PromiseAxios<{ workspaceId: string }> =>
+   API.post(`/members/workspace/${inviteCode}/join`);
 
 //********* */
 //********* PROJECTS
