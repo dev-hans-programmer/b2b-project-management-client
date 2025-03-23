@@ -3,6 +3,15 @@ export const QueryKeys = {
    WORKSPACE: 'workspace',
    WORKSPACES: 'workspaces',
    WORKSPACE_ANALYTICS: 'workspaceAnalytics',
+   MEMBERS_IN_WORKSPACE: 'membersInWorkspace',
+   PROJECTS_IN_WORKSPACE: 'projectsInWorkspace',
+   PROJECT: 'project',
+   TASKS_IN_PROJECT: 'tasksInProject',
+   TASK: 'task',
+   TASKS_IN_WORKSPACE: 'tasksInWorkspace',
+   TASKS_IN_USER: 'tasksInUser',
+   TASKS_IN_WORKSPACE_ANALYTICS: 'tasksInWorkspaceAnalytics',
+   TASKS_IN_PROJECT_ANALYTICS: 'tasksInProjectAnalytics',
 };
 
 export const TaskStatusEnum = {

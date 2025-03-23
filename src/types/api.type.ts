@@ -102,7 +102,6 @@ export type ChangeWorkspaceMemberRoleType = {
 };
 
 export type AllMembersInWorkspaceResponseType = {
-   message: string;
    members: {
       _id: string;
       userId: {

@@ -1,95 +1,170 @@
-import { ChevronDown, Loader } from "lucide-react";
+import { ChevronDown, Loader } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+   Command,
+   CommandEmpty,
+   CommandGroup,
+   CommandInput,
+   CommandItem,
+   CommandList,
+} from '@/components/ui/command';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { getAvatarColor } from "@/lib/helper";
+   Popover,
+   PopoverContent,
+   PopoverTrigger,
+} from '@/components/ui/popover';
+import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper';
+import { useApiMutation, useApiQuery } from '@/hooks/react-query-hooks';
+import {
+   changeWorkspaceMemberRoleMutationFn,
+   getMembersInWorkspaceQueryFn,
+} from '@/lib/api';
+import useWorkspaceId from '@/hooks/use-workspace-id';
+import { QueryKeys } from '@/constant';
+import { useAuthContext } from '@/context/auth-provider';
+import { UserType } from '@/types/api.type';
+import { toast } from '@/hooks/use-toast';
+
 const AllMembers = () => {
-  const isPending = false;
+   const workspaceId = useWorkspaceId();
+   const { user = {} as UserType } = useAuthContext();
 
-  const isLoading = false;
-  return (
-    <div className="grid gap-6 pt-2">
-      {isPending ? (
-        <Loader className="w-8 h-8 animate-spin place-self-center flex" />
-      ) : null}
-      <div className="flex items-center justify-between space-x-4">
-        <div className="flex items-center space-x-4">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/avatars/01.png" alt="Image" />
-            <AvatarFallback className={`${getAvatarColor("OM")}`}>
-              OM
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="text-sm font-medium leading-none">Sofia Davis</p>
-            <p className="text-sm text-muted-foreground">m@example.com</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="ml-auto min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none"
-              >
-                Owner <ChevronDown className="text-muted-foreground" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0" align="end">
-              <Command>
-                <CommandInput placeholder="Select new role..." />
-                <CommandList>
-                  {isLoading ? (
-                    <Loader className="w-8 h-8 animate-spin place-self-center flex my-4" />
-                  ) : (
-                    <>
-                      <CommandEmpty>No roles found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem className="teamaspace-y-1 flex flex-col items-start px-4 py-2">
-                          <p>Owner</p>
-                          <p className="text-sm text-muted-foreground">
-                            Admin-level access to all resources.
-                          </p>
-                        </CommandItem>
-                        <CommandItem className="disabled:pointer-events-none gap-1 mb-1 flex flex-col items-start px-4 py-1 cursor-pointer">
-                          <p>Admin</p>
-                          <p className="text-sm text-muted-foreground">
-                            Can view, create, edit tasks, project and manage
-                            settings.
-                          </p>
-                        </CommandItem>
-                        <CommandItem className="disabled:pointer-events-none gap-1 mb-1 flex flex-col items-start px-4 py-1 cursor-pointer">
-                          <p>Member</p>
-                          <p className="text-sm text-muted-foreground">
-                            Can view,edit only task created by.
-                          </p>
-                        </CommandItem>
-                      </CommandGroup>
-                    </>
-                  )}
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
+   const { data, isLoading } = useApiQuery({
+      queryFn: () => getMembersInWorkspaceQueryFn(workspaceId),
+      enabled: !!workspaceId,
+      queryKey: [QueryKeys.MEMBERS_IN_WORKSPACE, workspaceId],
+   });
+
+   const { mutate, isPending } = useApiMutation({
+      mutationFn: changeWorkspaceMemberRoleMutationFn,
+      onSuccessHandler: () => {
+         toast({
+            title: 'Success',
+            description: 'Role changed successfully',
+            variant: 'success',
+         });
+      },
+      onError: (err) =>
+         toast({
+            title: 'Error',
+            description: err,
+            variant: 'destructive',
+         }),
+   });
+
+   const { members = [], roles = [] } = data || {};
+
+   const handleSelect = (roleId: string, memberId: string) => {
+      if (isPending) return;
+      mutate({
+         workspaceId,
+         data: { roleId, memberId },
+      });
+   };
+
+   return (
+      <div className='grid gap-6 pt-2'>
+         {isPending ? (
+            <Loader className='w-8 h-8 animate-spin place-self-center flex' />
+         ) : null}
+         {members.map(
+            ({
+               _id,
+               role,
+               userId: { _id: userId, name, email, profilePicture },
+            }) => (
+               <div
+                  key={_id}
+                  className='flex items-center justify-between space-x-4'
+               >
+                  <div className='flex items-center space-x-4'>
+                     <Avatar className='h-8 w-8'>
+                        <AvatarImage
+                           src={profilePicture || '/avatars/01.png'}
+                           alt='Image'
+                        />
+                        <AvatarFallback
+                           className={`${getAvatarColor(name[0])}`}
+                        >
+                           {getAvatarFallbackText(name)}
+                        </AvatarFallback>
+                     </Avatar>
+                     <div>
+                        <p className='text-sm font-medium leading-none'>
+                           {name}
+                        </p>
+                        <p className='text-sm text-muted-foreground'>{email}</p>
+                     </div>
+                  </div>
+                  <div className='flex items-center gap-3'>
+                     <Popover>
+                        <PopoverTrigger asChild>
+                           <Button
+                              variant='outline'
+                              size='sm'
+                              className='ml-auto min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none'
+                           >
+                              {role.name.toLowerCase()}{' '}
+                              {user._id !== userId && (
+                                 <ChevronDown className='text-muted-foreground' />
+                              )}
+                           </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className='p-0' align='end'>
+                           <Command>
+                              <CommandInput placeholder='Select new role...' />
+                              <CommandList>
+                                 {isLoading ? (
+                                    <Loader className='w-8 h-8 animate-spin place-self-center flex my-4' />
+                                 ) : (
+                                    <>
+                                       <CommandEmpty>
+                                          No roles found.
+                                       </CommandEmpty>
+                                       <CommandGroup>
+                                          {roles.map(
+                                             (role) =>
+                                                role.name !== 'OWNER' && (
+                                                   <CommandItem
+                                                      className='disabled:pointer-events-none gap-1 mb-1  flex flex-col items-start px-4 py-2 cursor-pointer'
+                                                      onSelect={() => {
+                                                         handleSelect(
+                                                            role._id,
+                                                            userId
+                                                         );
+                                                      }}
+                                                   >
+                                                      <p className='capitalize'>
+                                                         {role.name.toLowerCase()}
+                                                      </p>
+                                                      <p className='text-sm text-muted-foreground'>
+                                                         {role.name ===
+                                                            'ADMIN' &&
+                                                            `Can view, create, edit tasks, project and manage settings .`}
+
+                                                         {role.name ===
+                                                            'MEMBER' &&
+                                                            `Can view,edit only task created by.`}
+                                                      </p>
+                                                   </CommandItem>
+                                                )
+                                          )}
+                                       </CommandGroup>
+                                    </>
+                                 )}
+                              </CommandList>
+                           </Command>
+                        </PopoverContent>
+                     </Popover>
+                  </div>
+               </div>
+            )
+         )}
       </div>
-    </div>
-  );
+   );
 };
 
 export default AllMembers;
