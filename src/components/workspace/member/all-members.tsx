@@ -23,14 +23,16 @@ import {
    getMembersInWorkspaceQueryFn,
 } from '@/lib/api';
 import useWorkspaceId from '@/hooks/use-workspace-id';
-import { QueryKeys } from '@/constant';
+import { Permissions, QueryKeys } from '@/constant';
 import { useAuthContext } from '@/context/auth-provider';
 import { UserType } from '@/types/api.type';
 import { toast } from '@/hooks/use-toast';
 
 const AllMembers = () => {
    const workspaceId = useWorkspaceId();
-   const { user = {} as UserType } = useAuthContext();
+   const { user = {} as UserType, hasPermission } = useAuthContext();
+
+   const canChangeMemberRole = hasPermission(Permissions.CHANGE_MEMBER_ROLE);
 
    const { data, isLoading } = useApiQuery({
       queryFn: () => getMembersInWorkspaceQueryFn(workspaceId),
@@ -105,59 +107,66 @@ const AllMembers = () => {
                            <Button
                               variant='outline'
                               size='sm'
+                              disabled={
+                                 isLoading ||
+                                 !canChangeMemberRole ||
+                                 userId === user._id
+                              }
                               className='ml-auto min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none'
                            >
                               {role.name.toLowerCase()}{' '}
-                              {user._id !== userId && (
+                              {canChangeMemberRole && user._id !== userId && (
                                  <ChevronDown className='text-muted-foreground' />
                               )}
                            </Button>
                         </PopoverTrigger>
-                        <PopoverContent className='p-0' align='end'>
-                           <Command>
-                              <CommandInput placeholder='Select new role...' />
-                              <CommandList>
-                                 {isLoading ? (
-                                    <Loader className='w-8 h-8 animate-spin place-self-center flex my-4' />
-                                 ) : (
-                                    <>
-                                       <CommandEmpty>
-                                          No roles found.
-                                       </CommandEmpty>
-                                       <CommandGroup>
-                                          {roles.map(
-                                             (role) =>
-                                                role.name !== 'OWNER' && (
-                                                   <CommandItem
-                                                      className='disabled:pointer-events-none gap-1 mb-1  flex flex-col items-start px-4 py-2 cursor-pointer'
-                                                      onSelect={() => {
-                                                         handleSelect(
-                                                            role._id,
-                                                            userId
-                                                         );
-                                                      }}
-                                                   >
-                                                      <p className='capitalize'>
-                                                         {role.name.toLowerCase()}
-                                                      </p>
-                                                      <p className='text-sm text-muted-foreground'>
-                                                         {role.name ===
-                                                            'ADMIN' &&
-                                                            `Can view, create, edit tasks, project and manage settings .`}
+                        {canChangeMemberRole && (
+                           <PopoverContent className='p-0' align='end'>
+                              <Command>
+                                 <CommandInput placeholder='Select new role...' />
+                                 <CommandList>
+                                    {isLoading ? (
+                                       <Loader className='w-8 h-8 animate-spin place-self-center flex my-4' />
+                                    ) : (
+                                       <>
+                                          <CommandEmpty>
+                                             No roles found.
+                                          </CommandEmpty>
+                                          <CommandGroup>
+                                             {roles.map(
+                                                (role) =>
+                                                   role.name !== 'OWNER' && (
+                                                      <CommandItem
+                                                         className='disabled:pointer-events-none gap-1 mb-1  flex flex-col items-start px-4 py-2 cursor-pointer'
+                                                         onSelect={() => {
+                                                            handleSelect(
+                                                               role._id,
+                                                               userId
+                                                            );
+                                                         }}
+                                                      >
+                                                         <p className='capitalize'>
+                                                            {role.name.toLowerCase()}
+                                                         </p>
+                                                         <p className='text-sm text-muted-foreground'>
+                                                            {role.name ===
+                                                               'ADMIN' &&
+                                                               `Can view, create, edit tasks, project and manage settings .`}
 
-                                                         {role.name ===
-                                                            'MEMBER' &&
-                                                            `Can view,edit only task created by.`}
-                                                      </p>
-                                                   </CommandItem>
-                                                )
-                                          )}
-                                       </CommandGroup>
-                                    </>
-                                 )}
-                              </CommandList>
-                           </Command>
-                        </PopoverContent>
+                                                            {role.name ===
+                                                               'MEMBER' &&
+                                                               `Can view,edit only task created by.`}
+                                                         </p>
+                                                      </CommandItem>
+                                                   )
+                                             )}
+                                          </CommandGroup>
+                                       </>
+                                    )}
+                                 </CommandList>
+                              </Command>
+                           </PopoverContent>
+                        )}
                      </Popover>
                   </div>
                </div>

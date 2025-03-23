@@ -4,6 +4,8 @@ import useAuth from '@/hooks/api/use-auth';
 import { UserType, WorkspaceType } from '@/types/api.type';
 import useGetWorkspaceQuery from '@/hooks/api/use-get-workspace';
 import { useNavigate } from 'react-router-dom';
+import usePermissions from '@/hooks/use-permissions';
+import { PermissionType } from '@/constant';
 
 // Define the context shape
 type AuthContextType = {
@@ -15,6 +17,7 @@ type AuthContextType = {
    refetchAuth: () => void;
    refetchWorkspace: () => void;
    workspace?: WorkspaceType;
+   hasPermission: (permission: PermissionType) => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,6 +43,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       fullErrorObject,
    } = useGetWorkspaceQuery(workspaceId);
 
+   const permissions = usePermissions(data?.user, workspaceData?.workspace);
+
+   const hasPermission = (permission: PermissionType) => {
+      console.log(
+         'permissions',
+         permissions,
+         isWorkspaceLoading,
+         isLoading,
+         data?.user,
+         workspaceData?.workspace
+      );
+      return permissions.includes(permission);
+   };
+
    useEffect(() => {
       if (fullErrorObject?.errorCode === 'ACCESS_UNAUTHORIZED') {
          navigate('/');
@@ -56,6 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             user: data?.user,
             error: errorMessage || workspaceErrorMessage,
             workspace: workspaceData?.workspace,
+            hasPermission,
 
             isLoading: isLoading || isWorkspaceLoading,
             isFetching,
